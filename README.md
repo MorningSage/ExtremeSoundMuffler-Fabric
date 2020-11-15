@@ -1,7 +1,10 @@
 # ExtremeSoundMuffler
 ## Client side sound Muffler
 
-Download: <CF Link TBA>
+Download Fabric: <CF Link TBA>
+Download Forge: https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler
+
+This version is a direct port of the mod by LeoBeliik.  You can find there original here: https://github.com/LeoBeliik/ExtremeSoundMuffler
 
 Extreme sound muffler is a client side mod that allows you to muffle sounds selectively.
 
