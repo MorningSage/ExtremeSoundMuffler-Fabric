@@ -2,6 +2,7 @@
 ## Client side sound Muffler
 
 Download Fabric: CF Link TBA
+
 Download Forge: https://www.curseforge.com/minecraft/mc-mods/extreme-sound-muffler
 
 This version is a direct port of the mod by LeoBeliik.  You can find there original here: https://github.com/LeoBeliik/ExtremeSoundMuffler
