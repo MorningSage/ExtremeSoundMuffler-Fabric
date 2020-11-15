@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "morningsage.extremesoundmuffler.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MinecraftServerMixin"
+  ],
+  "client": [
+    "MinecraftClientMixin",
+    "AbstractButtonWidgetMixin",
+    "ClientWorldMixin",
+    "ScreenMixin",
+    "SoundSystemMixin",
+    "accessors.HandledScreenAccessor",
+    "accessors.KeyBindingAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
