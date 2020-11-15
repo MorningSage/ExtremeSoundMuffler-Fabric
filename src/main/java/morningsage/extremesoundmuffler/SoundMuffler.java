@@ -2,12 +2,14 @@ package morningsage.extremesoundmuffler;
 
 import morningsage.extremesoundmuffler.config.ConfigFileHandler;
 import morningsage.extremesoundmuffler.events.InitGuiEvents;
+import morningsage.extremesoundmuffler.gui.MainScreen;
 import morningsage.extremesoundmuffler.gui.buttons.InvButton;
 import morningsage.extremesoundmuffler.mixin.accessors.KeyBindingAccessor;
 import morningsage.extremesoundmuffler.utils.ISoundLists;
 import morningsage.extremesoundmuffler.utils.eventHndlers.SoundEventHandler;
 import morningsage.extremesoundmuffler.utils.eventHndlers.WorldEventsHandler;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
@@ -47,6 +49,12 @@ public class SoundMuffler implements ClientModInitializer {
 			"key.categories.misc"
 		);
 		KeyBindingHelper.registerKeyBinding(openMuffleScreen);
+
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			while (openMuffleScreen.wasPressed()) {
+				MainScreen.open();
+			}
+		});
 	}
 
 	public static int getHotkey() {
