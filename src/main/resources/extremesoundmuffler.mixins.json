@@ -7,9 +7,9 @@
     "MinecraftServerMixin"
   ],
   "client": [
-    "MinecraftClientMixin",
     "AbstractButtonWidgetMixin",
     "ClientWorldMixin",
+    "MinecraftClientMixin",
     "ScreenMixin",
     "SoundSystemMixin",
     "accessors.HandledScreenAccessor",

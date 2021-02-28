@@ -11,12 +11,14 @@ import morningsage.extremesoundmuffler.utils.eventHndlers.WorldEventsHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class SoundMuffler implements ClientModInitializer {
 	public static final String MODID = "extremesoundmuffler";
@@ -27,7 +29,6 @@ public class SoundMuffler implements ClientModInitializer {
 	public void onInitializeClient() {
 		ISoundLists.forbiddenSounds.addAll(Config.forbiddenSounds);
 
-		SoundEventHandler.init();
 		WorldEventsHandler.init();
 
 		InitGuiEvents.POST.register((gui, list, add, remove) -> {

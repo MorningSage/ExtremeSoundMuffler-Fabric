@@ -15,6 +15,6 @@ public class ClientWorldMixin {
 		method = "<init>"
 	)
 	private void init(CallbackInfo info) {
-		CombinedWorldEvents.LOAD.invoker().onWorldLoad((WorldAccess) this);
+		CombinedWorldEvents.LOAD.invoker().onWorldEvent((WorldAccess) this);
 	}
 }

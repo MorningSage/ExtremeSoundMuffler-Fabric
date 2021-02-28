@@ -13,14 +13,14 @@ public class InvButton extends AbstractPressableButtonWidget {
     private final HandledScreen<?> parent;
     private final int buttonX;
 
-    private static int getGuiLeft(HandledScreen parentGui) {
+    private static int getGuiLeft(HandledScreen<?> parentGui) {
         return ((HandledScreenAccessor) parentGui).getX();
     }
-    private static int getGuiTop(HandledScreen parentGui) {
+    private static int getGuiTop(HandledScreen<?> parentGui) {
         return ((HandledScreenAccessor) parentGui).getY();
     }
 
-    public InvButton(HandledScreen parentGui, int x, int y) {
+    public InvButton(HandledScreen<?> parentGui, int x, int y) {
         super(x + getGuiLeft(parentGui) + 11, getGuiTop(parentGui) + y - 2, 11, 11, LiteralText.EMPTY);
         parent = parentGui;
         buttonX = x;
@@ -31,7 +31,6 @@ public class InvButton extends AbstractPressableButtonWidget {
         MainScreen.open();
     }
 
-    //@ParametersAreNonnullByDefault
     @Override
     public void render(MatrixStack matrix, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {

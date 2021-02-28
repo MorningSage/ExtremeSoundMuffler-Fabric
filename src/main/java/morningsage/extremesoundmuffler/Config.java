@@ -5,7 +5,7 @@ import morningsage.extremesoundmuffler.config.ConfigField;
 import java.util.Arrays;
 import java.util.List;
 
-public class Config {
+public final class Config {
     @ConfigField(
         category = "general",
         comment = "Disable the anchors?"

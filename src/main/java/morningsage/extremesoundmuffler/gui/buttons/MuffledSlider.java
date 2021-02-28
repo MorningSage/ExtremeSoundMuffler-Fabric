@@ -22,7 +22,6 @@ import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public class MuffledSlider extends AbstractButtonWidget implements ISoundLists {
-
     private final int colorWhite = 0xffffff;
     private final int colorYellow = 0xffff00;
     private final String mainTitle = "ESM - Main Screen";
@@ -128,12 +127,7 @@ public class MuffledSlider extends AbstractButtonWidget implements ISoundLists {
     }
 
     private void setSliderValue(double value) {
-        double d0 = this.sliderValue;
         this.sliderValue = MathHelper.clamp(value, 0.0D, 0.9D);
-        if (d0 != this.sliderValue) {
-            this.func_230972_a_();
-        }
-        this.func_230979_b_();
         updateVolume();
     }
 
@@ -160,11 +154,5 @@ public class MuffledSlider extends AbstractButtonWidget implements ISoundLists {
         } else {
             Objects.requireNonNull(MainScreen.getAnchorByName(screenTitle)).replaceSound(this.sound, this.sliderValue);
         }
-    }
-
-    private void func_230979_b_() {
-    }
-
-    private void func_230972_a_() {
     }
 }

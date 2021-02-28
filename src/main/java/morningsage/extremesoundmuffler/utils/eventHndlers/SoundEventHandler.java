@@ -1,69 +1,54 @@
 package morningsage.extremesoundmuffler.utils.eventHndlers;
 
 import morningsage.extremesoundmuffler.Config;
-import morningsage.extremesoundmuffler.events.PlaySoundEvent;
 import morningsage.extremesoundmuffler.gui.MainScreen;
 import morningsage.extremesoundmuffler.utils.Anchor;
 import morningsage.extremesoundmuffler.utils.ISoundLists;
-import morningsage.extremesoundmuffler.utils.MuffledSound;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.ActionResult;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 public class SoundEventHandler implements ISoundLists {
 
-    private static boolean isFromPSB = false;
+    private static Identifier overriddenSoundIdentifier = null;
 
-    public static void init() {
-        PlaySoundEvent.EVENT.register((soundSystem, soundInstance, soundReplacement) -> {
-            if (MinecraftClient.getInstance().world == null) {
-                return ActionResult.PASS;
-            }
+    public static float getSoundVolume(Identifier soundIdentifier, float defaultVolume, BlockPos sourceLocation) {
+        if (MinecraftClient.getInstance().world == null) return defaultVolume;
 
-            if (isFromPSB) {
-                isFromPSB = false;
-                return ActionResult.PASS;
-            }
+        if (overriddenSoundIdentifier == soundIdentifier) {
+            overriddenSoundIdentifier = null;
+            return defaultVolume;
+        }
 
-            BlockPos soundPos = new BlockPos(soundInstance.getX(), soundInstance.getY(), soundInstance.getZ());
+        for (String fs : forbiddenSounds) {
+            if (soundIdentifier.toString().contains(fs)) return 0.0F;
+        }
 
-            for (String fs : forbiddenSounds) {
-                if (soundInstance.getId().toString().contains(fs)) {
-                    return ActionResult.FAIL;
+        recentSoundsList.add(soundIdentifier);
+
+        if (!MainScreen.isMuffled()) return defaultVolume;
+
+        if (muffledSounds.containsKey(soundIdentifier)) {
+            return muffledSounds.get(soundIdentifier).floatValue();
+        }
+
+        if (Config.disableAnchors) return defaultVolume;
+
+        for (Anchor anchor : MainScreen.getAnchors()) {
+            if (anchor.getAnchorPos() == null) continue;
+
+            boolean sameDimension = MinecraftClient.getInstance().world.getRegistryKey().getValue().equals(anchor.getDimension());
+            if (sameDimension && sourceLocation.isWithinDistance(anchor.getAnchorPos(), anchor.getRadius())) {
+                if (anchor.getMuffledSounds().containsKey(soundIdentifier)) {
+                    return anchor.getMuffledSounds().get(soundIdentifier).floatValue();
                 }
             }
+        }
 
-            recentSoundsList.add(soundInstance.getId());
-
-            if (MainScreen.isMuffled()) {
-                if (muffledSounds.containsKey(soundInstance.getId())) {
-                    soundReplacement.setSoundInstance(new MuffledSound(soundInstance, muffledSounds.get(soundInstance.getId()).floatValue()));
-                    return ActionResult.FAIL;
-                }
-
-                //If Anchors are disabled in Config
-                if (Config.disableAnchors) {
-                    return ActionResult.PASS;
-                }
-
-                for (Anchor anchor : MainScreen.getAnchors()) {
-                    if (anchor.getAnchorPos() != null) {
-                        boolean sameDimension = MinecraftClient.getInstance().world.getRegistryKey().getValue().equals(anchor.getDimension());
-                        if (sameDimension && soundPos.isWithinDistance(anchor.getAnchorPos(), anchor.getRadius())) {
-                            if (anchor.getMuffledSounds().containsKey(soundInstance.getId())) {
-                                soundReplacement.setSoundInstance(new MuffledSound(soundInstance, anchor.getMuffledSounds().get(soundInstance.getId()).floatValue()));
-                                return ActionResult.FAIL;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return ActionResult.PASS;
-        });
+        return defaultVolume;
     }
 
-    public static void isFromPlaySoundButton(boolean b) {
-        isFromPSB = b;
+    public static void setOverrideSound(Identifier overriddenSoundIdentifier) {
+        SoundEventHandler.overriddenSoundIdentifier = overriddenSoundIdentifier;
     }
 }

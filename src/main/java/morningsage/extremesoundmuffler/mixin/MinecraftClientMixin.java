@@ -23,7 +23,7 @@ public class MinecraftClientMixin {
         method = "joinWorld"
     )
     public void joinWorld(ClientWorld world, CallbackInfo callbackInfo) {
-        if (this.world != null) CombinedWorldEvents.UNLOAD.invoker().onWorldUnload(this.world);
+        if (this.world != null) CombinedWorldEvents.UNLOAD.invoker().onWorldEvent(this.world);
     }
 
     @Inject(
@@ -35,6 +35,6 @@ public class MinecraftClientMixin {
         method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;)V"
     )
     public void disconnect(Screen screen, CallbackInfo callbackInfo) {
-        if (world != null) CombinedWorldEvents.UNLOAD.invoker().onWorldUnload(this.world);
+        if (world != null) CombinedWorldEvents.UNLOAD.invoker().onWorldEvent(this.world);
     }
 }

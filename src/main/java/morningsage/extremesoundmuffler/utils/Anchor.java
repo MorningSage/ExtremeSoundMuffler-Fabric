@@ -104,8 +104,8 @@ public class Anchor {
         muffledSounds.clear();
     }
 
-    public void editAnchor(String title, int radious) {
+    public void editAnchor(String title, int radius) {
         setName(title);
-        setRadius(radious);
+        setRadius(radius);
     }
 }

@@ -33,7 +33,7 @@ You can browse between the **Recent sounds**, **All the sounds** and **Muffled s
 
 You can configure **Anchors** (10 max) to muffle sounds.
 
-You can configure the **Radious** of the **Anchor** pressing the **Edit Anchor button**.
+You can configure the **Radius** of the **Anchor** pressing the **Edit Anchor button**.
 
 You can rename **Anchors**.
 

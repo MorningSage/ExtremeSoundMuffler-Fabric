@@ -37,9 +37,4 @@ public class AbstractButtonWidgetMixin implements AbstractButtonWidgetAccessor {
     public void setFGColor(int color) {
         this.packedFGColor = color;
     }
-
-    @Override
-    public void clearFGColor() {
-        this.packedFGColor = UNSET_FG_COLOR;
-    }
 }

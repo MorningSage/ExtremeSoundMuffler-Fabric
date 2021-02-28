@@ -27,7 +27,7 @@ public class MinecraftServerMixin {
     )
     protected void createWorlds(WorldGenerationProgressListener worldGenerationProgressListener, CallbackInfo callbackInfo) {
         for (ServerWorld value : this.worlds.values()) {
-            CombinedWorldEvents.LOAD.invoker().onWorldLoad(value);
+            CombinedWorldEvents.LOAD.invoker().onWorldEvent(value);
         }
     }
 
@@ -40,6 +40,6 @@ public class MinecraftServerMixin {
         locals = LocalCapture.CAPTURE_FAILHARD
     )
     protected void shutdown(CallbackInfo callbackInfo, Iterator<ServerWorld> var1, ServerWorld serverWorld2) {
-        CombinedWorldEvents.UNLOAD.invoker().onWorldUnload(serverWorld2);
+        CombinedWorldEvents.UNLOAD.invoker().onWorldEvent(serverWorld2);
     }
 }
