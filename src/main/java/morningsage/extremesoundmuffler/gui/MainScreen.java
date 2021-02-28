@@ -471,10 +471,10 @@ public class MainScreen extends Screen implements ISoundLists {
             drawCenteredString(matrix, textRenderer, message, x, y - 11, whiteText);
         }
 
-        //previuos sounds button tooltip
+        // previous sounds button tooltip
         x = btnPrevSounds.x;
         y = btnPrevSounds.y;
-        message = "Previuos Sounds";
+        message = "Previous Sounds";
         stringW = textRenderer.getWidth(message) / 2;
 
         if (mouseX > x && mouseX < x + btnPrevSounds.getWidth() && mouseY > y && mouseY < y + btnPrevSounds.getHeight()) {
