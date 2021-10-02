@@ -3,6 +3,7 @@ package morningsage.extremesoundmuffler.mufflers;
 import morningsage.extremesoundmuffler.mufflers.instances.AnchorMuffler;
 import morningsage.extremesoundmuffler.mufflers.instances.GenericMuffler;
 import morningsage.extremesoundmuffler.mufflers.instances.ISoundMuffler;
+import morningsage.extremesoundmuffler.utils.JsonIO;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -37,9 +38,9 @@ public final class SoundMufflers {
         anchors.addAll(anchorList);
     }
 
-    @Nullable
-    public static AnchorMuffler getAnchorByName(String name) {
-        return anchors.stream().filter(a -> a.getName().equals(name)).findFirst().orElse(null);
+    public static void saveMufflers() {
+        JsonIO.saveAnchors(getAnchors());
+        JsonIO.saveMuffledMap(GenericMuffler.INSTANCE.getMuffledSounds());
     }
 
     public static boolean isMuffling() {

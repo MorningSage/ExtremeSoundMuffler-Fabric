@@ -11,7 +11,9 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
+import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 
@@ -27,7 +29,7 @@ public class SoundMuffler implements ClientModInitializer {
 		WorldEventsHandler.init();
 
 		InitGuiEvents.POST_INIT.register((gui, list, add, remove) -> {
-			if (Config.disableInventoryButton || !(gui instanceof AbstractInventoryScreen) || list == null || add == null) return;
+			if (Config.disableInventoryButton || !(gui instanceof InventoryScreen)) return;
 
 			add.accept(new InvButton((HandledScreen<?>) gui, 64, 9));
 		});

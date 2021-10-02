@@ -1,7 +1,6 @@
 package morningsage.extremesoundmuffler.mufflers.instances;
 
 import net.minecraft.util.Identifier;
-
 import java.util.SortedMap;
 
 public interface ISoundMuffler {
