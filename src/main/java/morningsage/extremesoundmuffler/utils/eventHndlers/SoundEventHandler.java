@@ -1,8 +1,9 @@
 package morningsage.extremesoundmuffler.utils.eventHndlers;
 
 import morningsage.extremesoundmuffler.Config;
-import morningsage.extremesoundmuffler.gui.MainScreen;
-import morningsage.extremesoundmuffler.utils.Anchor;
+import morningsage.extremesoundmuffler.mufflers.SoundMufflers;
+import morningsage.extremesoundmuffler.mufflers.instances.AnchorMuffler;
+import morningsage.extremesoundmuffler.mufflers.instances.GenericMuffler;
 import morningsage.extremesoundmuffler.utils.ISoundLists;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
@@ -26,15 +27,15 @@ public class SoundEventHandler implements ISoundLists {
 
         recentSoundsList.add(soundIdentifier);
 
-        if (!MainScreen.isMuffled()) return defaultVolume;
+        if (!SoundMufflers.isMuffling()) return defaultVolume;
 
-        if (muffledSounds.containsKey(soundIdentifier)) {
-            return muffledSounds.get(soundIdentifier).floatValue();
+        if (GenericMuffler.INSTANCE.hasSound(soundIdentifier)) {
+            return GenericMuffler.INSTANCE.getMuffledSounds().get(soundIdentifier).floatValue();
         }
 
         if (Config.disableAnchors) return defaultVolume;
 
-        for (Anchor anchor : MainScreen.getAnchors()) {
+        for (AnchorMuffler anchor : SoundMufflers.getAnchors()) {
             if (anchor.getAnchorPos() == null) continue;
 
             boolean sameDimension = MinecraftClient.getInstance().world.getRegistryKey().getValue().equals(anchor.getDimension());

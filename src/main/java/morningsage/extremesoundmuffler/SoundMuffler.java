@@ -6,19 +6,14 @@ import morningsage.extremesoundmuffler.gui.MainScreen;
 import morningsage.extremesoundmuffler.gui.buttons.InvButton;
 import morningsage.extremesoundmuffler.mixin.accessors.KeyBindingAccessor;
 import morningsage.extremesoundmuffler.utils.ISoundLists;
-import morningsage.extremesoundmuffler.utils.eventHndlers.SoundEventHandler;
 import morningsage.extremesoundmuffler.utils.eventHndlers.WorldEventsHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 public class SoundMuffler implements ClientModInitializer {
 	public static final String MODID = "extremesoundmuffler";
@@ -31,25 +26,18 @@ public class SoundMuffler implements ClientModInitializer {
 
 		WorldEventsHandler.init();
 
-		InitGuiEvents.POST.register((gui, list, add, remove) -> {
-			if (Config.disableInventoryButton || gui instanceof CreativeInventoryScreen || list == null) {
-				return;
-			}
-			try {
-				if (gui instanceof AbstractInventoryScreen) {
-					add.accept(new InvButton((HandledScreen<?>) gui, 64, 9));
-				}
-			} catch (NullPointerException ignored) {
-			}
+		InitGuiEvents.POST_INIT.register((gui, list, add, remove) -> {
+			if (Config.disableInventoryButton || !(gui instanceof AbstractInventoryScreen) || list == null || add == null) return;
+
+			add.accept(new InvButton((HandledScreen<?>) gui, 64, 9));
 		});
 
-		openMuffleScreen = new KeyBinding(
+		openMuffleScreen = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 			"Open sound muffle screen",
 			InputUtil.Type.KEYSYM,
 			InputUtil.UNKNOWN_KEY.getCode(),
 			"key.categories.misc"
-		);
-		KeyBindingHelper.registerKeyBinding(openMuffleScreen);
+		));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (openMuffleScreen.wasPressed()) {

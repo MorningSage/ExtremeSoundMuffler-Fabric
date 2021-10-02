@@ -26,7 +26,7 @@ public final class Config {
 
     @ConfigField(
         category = "general",
-        comment = "Blacklisted Sounds - add the name of the sounds to blacklist, separated with comma"
+        comment = "Ignored Sounds - add the name of the sounds to ignore, separated with comma"
     )
     public static List<String> forbiddenSounds = Arrays.asList("ui.", "music.", "ambient.");
 }

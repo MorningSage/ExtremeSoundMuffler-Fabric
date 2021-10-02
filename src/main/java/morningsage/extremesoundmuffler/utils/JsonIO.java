@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import morningsage.extremesoundmuffler.mufflers.instances.AnchorMuffler;
 import net.minecraft.util.Identifier;
 
 import java.io.*;
@@ -36,7 +37,7 @@ public class JsonIO {
         }
     }
 
-    public static void saveAnchors(List<Anchor> anchor) {
+    public static void saveAnchors(List<AnchorMuffler> anchor) {
         new File("ESM/").mkdir();
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(anchorFile), StandardCharsets.UTF_8)) {
             writer.write(gson.toJson(anchor));
@@ -44,9 +45,9 @@ public class JsonIO {
         }
     }
 
-    public static List<Anchor> loadAnchors() {
+    public static List<AnchorMuffler> loadAnchors() {
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream(anchorFile), StandardCharsets.UTF_8)) {
-            return gson.fromJson(new JsonReader(reader), new TypeToken<List<Anchor>>() {
+            return gson.fromJson(new JsonReader(reader), new TypeToken<List<AnchorMuffler>>() {
             }.getType());
         } catch (JsonSyntaxException | IOException ignored) {
             return null;

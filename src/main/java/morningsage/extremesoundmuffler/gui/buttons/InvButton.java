@@ -33,14 +33,15 @@ public class InvButton extends AbstractPressableButtonWidget {
 
     @Override
     public void render(MatrixStack matrix, int mouseX, int mouseY, float partialTicks) {
-        if (this.visible) {
-            x = buttonX + getGuiLeft(parent) + 11;
-            minecraft.getTextureManager().bindTexture(MainScreen.GUI);
-            drawTexture(matrix, x, y, 43f, 202f, 11, 11, 256, 256);
-            if (this.isHovered(mouseX, mouseY)) {
-                drawCenteredString(matrix, minecraft.textRenderer, "Muffler", x + 5, this.y + this.height + 1, 0xffffff);
-            }
-        }
+        if (!this.visible) return;
+
+        x = buttonX + getGuiLeft(parent) + 11;
+        minecraft.getTextureManager().bindTexture(MainScreen.GUI);
+        drawTexture(matrix, x, y, 43.0F, 202.0F, 11, 11, 256, 256);
+
+        if (!isHovered(mouseX, mouseY)) return;
+
+        drawCenteredString(matrix, minecraft.textRenderer, "Muffler", x + 5, this.y + this.height + 1, 0xFFFFFF);
     }
 
     private boolean isHovered(int mouseX, int mouseY) {

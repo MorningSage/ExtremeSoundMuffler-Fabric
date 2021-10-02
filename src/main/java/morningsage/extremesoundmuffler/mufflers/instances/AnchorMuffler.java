@@ -1,24 +1,22 @@
-package morningsage.extremesoundmuffler.utils;
+package morningsage.extremesoundmuffler.mufflers.instances;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.Objects;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
-public class Anchor {
+public class AnchorMuffler implements ISoundMuffler {
 
     private final int id;
     private BlockPos anchorPos;
     private String name;
     private Identifier dimension;
     private int radius;
-    private final SortedMap<String, Double> muffledSounds = new TreeMap<>();
+    private final Map<Identifier, Double> muffledSounds = new HashMap<>();
 
-    public Anchor(int id, String name) {
+    public AnchorMuffler(int id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -31,10 +29,12 @@ public class Anchor {
         this.anchorPos = anchorPos;
     }
 
-    public int getId() {
+    @Override
+    public int getIndex() {
         return id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -47,22 +47,23 @@ public class Anchor {
         this.radius = radius;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public SortedMap<Identifier, Double> getMuffledSounds() {
-        SortedMap<Identifier, Double> temp = new TreeMap<>();
-        this.muffledSounds.forEach((R,D) -> temp.put(new Identifier(R), D));
-        return temp;
+        return new TreeMap<>(this.muffledSounds);
     }
 
+    @Override
     public void addSound(Identifier sound, double volume) {
-        muffledSounds.put(sound.toString(), volume);
-    }
-
-    public void replaceSound(Identifier sound, double volume) {
-        muffledSounds.replace(sound.toString(),volume);
+        if (muffledSounds.containsKey(sound)) {
+            muffledSounds.replace(sound, volume);
+        } else {
+            muffledSounds.put(sound, volume);
+        }
     }
 
     public String getX() {
@@ -85,10 +86,12 @@ public class Anchor {
         this.dimension = dimension;
     }
 
+    @Override
     public void removeSound(Identifier sound) {
-        muffledSounds.remove(sound.toString());
+        muffledSounds.remove(sound);
     }
 
+    @Override
     public void setAnchor() {
         ClientPlayerEntity player = Objects.requireNonNull(MinecraftClient.getInstance().player);
         setAnchorPos(player.getBlockPos());
@@ -96,16 +99,27 @@ public class Anchor {
         setRadius(this.getRadius() == 0 ? 32 : this.getRadius());
     }
 
-    public void deleteAnchor() {
-        setName("Anchor: " + this.getId());
+    @Override
+    public boolean hasSounds() {
+        return !muffledSounds.isEmpty();
+    }
+
+    @Override
+    public void clearSounds() {
+        setName("Anchor: " + this.getIndex());
         setAnchorPos(null);
         setDimension(null);
         setRadius(0);
         muffledSounds.clear();
     }
 
-    public void editAnchor(String title, int radius) {
-        setName(title);
-        setRadius(radius);
+    @Override
+    public boolean hasSound(Identifier sound) {
+        return muffledSounds.containsKey(sound);
+    }
+
+    @Override
+    public boolean isValidMuffler() {
+        return getAnchorPos() != null;
     }
 }

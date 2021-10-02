@@ -9,16 +9,14 @@ import net.minecraft.world.WorldAccess;
 import java.util.List;
 import java.util.function.Consumer;
 
-public final class InitGuiEvents {
-    public static final Event<PostInit> POST = EventFactory.createArrayBacked(PostInit.class,
+@FunctionalInterface
+public interface InitGuiEvents {
+    Event<InitGuiEvents> POST_INIT = EventFactory.createArrayBacked(InitGuiEvents.class,
         callbacks -> (gui, list, add, remove) -> {
-        for (PostInit callback : callbacks) {
+        for (InitGuiEvents callback : callbacks) {
             callback.onGuiPostInit(gui, list, add, remove);
         }
     });
 
-    @FunctionalInterface
-    public interface PostInit {
-        void onGuiPostInit(Screen gui, List<AbstractButtonWidget> list, Consumer<AbstractButtonWidget> add, Consumer<AbstractButtonWidget> remove);
-    }
+    void onGuiPostInit(Screen gui, List<AbstractButtonWidget> list, Consumer<AbstractButtonWidget> add, Consumer<AbstractButtonWidget> remove);
 }

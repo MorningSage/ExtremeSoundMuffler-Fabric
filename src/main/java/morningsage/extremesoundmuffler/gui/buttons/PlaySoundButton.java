@@ -19,15 +19,16 @@ public class PlaySoundButton extends AbstractPressableButtonWidget {
 
     public PlaySoundButton(int x, int y, SoundEvent sound) {
         super(x, y, 10, 10, Text.of("Play Sound"));
+
         this.setAlpha(0);
         this.sound = sound;
     }
 
     @Override
     public void onPress() {
-        if (this.active && this.visible && minecraft.player != null) {
+        if (minecraft.player != null) {
             SoundEventHandler.setOverrideSound(sound.getId());
-            minecraft.player.playSound(sound, 80, 1);
+            minecraft.player.playSound(sound, 80, 1.0F);
         }
     }
 }

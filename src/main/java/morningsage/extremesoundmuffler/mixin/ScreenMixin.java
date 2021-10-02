@@ -28,7 +28,7 @@ public abstract class ScreenMixin {
         method = "init(Lnet/minecraft/client/MinecraftClient;II)V"
     )
     public void init(MinecraftClient client, int width, int height, CallbackInfo callbackInfo) {
-        InitGuiEvents.POST.invoker().onGuiPostInit(
+        InitGuiEvents.POST_INIT.invoker().onGuiPostInit(
             (Screen) (Object) this, this.buttons, this::addButton, b -> {
                 buttons.remove(b);
                 children.remove(b);
