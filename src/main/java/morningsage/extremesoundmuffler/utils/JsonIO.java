@@ -47,8 +47,7 @@ public class JsonIO {
 
     public static List<AnchorMuffler> loadAnchors() {
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream(anchorFile), StandardCharsets.UTF_8)) {
-            return gson.fromJson(new JsonReader(reader), new TypeToken<List<AnchorMuffler>>() {
-            }.getType());
+            return gson.fromJson(new JsonReader(reader), new TypeToken<List<AnchorMuffler>>() {}.getType());
         } catch (JsonSyntaxException | IOException ignored) {
             return null;
         }

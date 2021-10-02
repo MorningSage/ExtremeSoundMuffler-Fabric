@@ -2,16 +2,15 @@ package morningsage.extremesoundmuffler;
 
 import morningsage.extremesoundmuffler.config.ConfigFileHandler;
 import morningsage.extremesoundmuffler.events.InitGuiEvents;
+import morningsage.extremesoundmuffler.events.handlers.GuiEventHandler;
 import morningsage.extremesoundmuffler.gui.MainScreen;
 import morningsage.extremesoundmuffler.gui.buttons.InvButton;
 import morningsage.extremesoundmuffler.mixin.accessors.KeyBindingAccessor;
-import morningsage.extremesoundmuffler.utils.ISoundLists;
-import morningsage.extremesoundmuffler.utils.eventHndlers.WorldEventsHandler;
+import morningsage.extremesoundmuffler.events.handlers.SoundEventHandler;
+import morningsage.extremesoundmuffler.events.handlers.WorldEventsHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.options.KeyBinding;
@@ -24,15 +23,9 @@ public class SoundMuffler implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		ISoundLists.forbiddenSounds.addAll(Config.forbiddenSounds);
-
+		SoundEventHandler.init();
 		WorldEventsHandler.init();
-
-		InitGuiEvents.POST_INIT.register((gui, list, add, remove) -> {
-			if (Config.disableInventoryButton || !(gui instanceof InventoryScreen)) return;
-
-			add.accept(new InvButton((HandledScreen<?>) gui, 64, 9));
-		});
+		GuiEventHandler.init();
 
 		openMuffleScreen = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 			"Open sound muffle screen",

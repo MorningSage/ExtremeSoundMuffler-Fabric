@@ -7,8 +7,8 @@ import morningsage.extremesoundmuffler.gui.buttons.ToggleButton;
 import morningsage.extremesoundmuffler.mufflers.SoundMufflers;
 import morningsage.extremesoundmuffler.mufflers.instances.AnchorMuffler;
 import morningsage.extremesoundmuffler.mufflers.instances.ISoundMuffler;
-import morningsage.extremesoundmuffler.utils.AbstractButtonWidgetAccessor;
-import morningsage.extremesoundmuffler.utils.ISoundLists;
+import morningsage.extremesoundmuffler.utils.AbstractButtonWidgetDuck;
+import morningsage.extremesoundmuffler.events.handlers.SoundEventHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -29,11 +29,12 @@ import org.lwjgl.glfw.GLFW;
 import java.util.*;
 
 @Environment(EnvType.CLIENT)
-public class MainScreen extends Screen implements ISoundLists {
+public class MainScreen extends Screen {
     public static final Identifier GUI = new Identifier(SoundMuffler.MODID, "textures/gui/sm_gui.png");
     private static final MinecraftClient minecraft = MinecraftClient.getInstance();
 
     private final List<AbstractButtonWidget> filteredButtons = new ArrayList<>();
+    private final SortedSet<Identifier> soundsList = new TreeSet<>();
     private final int xSize = 256;
     private final int ySize = 202;
     private final int whiteText = 0xffffff;
@@ -102,8 +103,8 @@ public class MainScreen extends Screen implements ISoundLists {
             open(mufflerIndex, btnToggleSoundsList.getValue(), searchBar.getText());
         })).setAlpha(0);
 
-        addButton(btnSetAnchor = new ButtonWidget(
-            getX() + 260, getY() + 62, 11, 11, emptyText, b -> SoundMufflers.getMufflerByIndex(mufflerIndex).setAnchor()
+        addButton(btnSetAnchor = new ButtonWidget(getX() + 260, getY() + 62, 11, 11, emptyText, b ->
+            ((AnchorMuffler) SoundMufflers.getMufflerByIndex(mufflerIndex)).setAnchor()
         )).setAlpha(0);
 
         addButton(btnEditAnchor = new ButtonWidget(
@@ -132,7 +133,6 @@ public class MainScreen extends Screen implements ISoundLists {
         updateText();
     }
 
-
     private void addSoundButtons() {
         int buttonH = minYButton;
         ISoundMuffler muffler = SoundMufflers.getMufflerByIndex(mufflerIndex);
@@ -141,13 +141,13 @@ public class MainScreen extends Screen implements ISoundLists {
         switch (btnToggleSoundsList.getValue()) {
             case RECENT:
                 if (muffler.hasSounds()) soundsList.addAll(muffler.getMuffledSounds().keySet());
-                soundsList.addAll(recentSoundsList);
+                soundsList.addAll(SoundEventHandler.getRecentSounds());
                 break;
             case ALL:
                 soundsList.addAll(Registry.SOUND_EVENT.getIds());
-                forbiddenSounds.forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
+                SoundEventHandler.getForbiddenSounds().forEach(fs -> soundsList.removeIf(sl -> sl.toString().contains(fs)));
                 break;
-            case MUFFLING:
+            case MUFFLED:
                 if (muffler.hasSounds()) soundsList.addAll(muffler.getMuffledSounds().keySet());
                 break;
             default:
@@ -156,10 +156,11 @@ public class MainScreen extends Screen implements ISoundLists {
 
         if (soundsList.isEmpty()) return;
 
+        int index = 0;
         for (Identifier sound : soundsList) {
             double volume = muffler.getMuffledSounds().get(sound) == null ? 1D : muffler.getMuffledSounds().get(sound);
 
-            MuffledSlider volumeSlider = new MuffledSlider(getX() + 11, buttonH, 205, 11, volume, sound, muffler);
+            MuffledSlider volumeSlider = new MuffledSlider(index++, getX() + 11, buttonH, 205, 11, volume, sound, muffler);
 
             boolean muffledAnchor = mufflerIndex >= 0 && mufflerIndex == muffler.getIndex() && muffler.getMuffledSounds().containsKey(sound);
             boolean muffledScreen = mufflerIndex <  0 && muffler.getMuffledSounds().containsKey(sound);
@@ -192,7 +193,7 @@ public class MainScreen extends Screen implements ISoundLists {
                 });
             }
 
-            ((AbstractButtonWidgetAccessor) btnAnchor).setFGColor(whiteText);
+            ((AbstractButtonWidgetDuck) btnAnchor).setFGColor(whiteText);
             addButton(btnAnchor).setAlpha(0);
             buttonW += 20;
         }
@@ -320,25 +321,25 @@ public class MainScreen extends Screen implements ISoundLists {
             }
         }
 
-        //Toggle List button draw message
         x = btnToggleSoundsList.x;
         y = btnToggleSoundsList.y;
         message = btnToggleSoundsList.getMessage().getString();
         int centerText = x + (btnToggleSoundsList.getWidth() / 2) - (textRenderer.getWidth(message) / 2);
         textRenderer.draw(matrix, message, centerText, y + 3, 0);
-        String text = "Showing " + message + " sounds";
-        int textW = textRenderer.getWidth(text);
-        int textX = x + (btnToggleSoundsList.getWidth() / 2) - (textW / 2) + 6;
 
+        //Toggle List button draw message
         if (mouseX > x && mouseX < x + 43 && mouseY > y && mouseY < y + 13) {
+            String text = "Showing " + message + " sounds";
+            int textW = textRenderer.getWidth(text);
+            int textX = x + (btnToggleSoundsList.getWidth() / 2) - (textW / 2) + 6;
             fill(matrix, textX - 2, y + 20, textX + textW + 2, y + 22 + textRenderer.fontHeight, darkBG);
             textRenderer.draw(matrix, text, textX, y + 22, whiteText);
         }
 
         //Show Radius and Title text when editing AnchorMuffler and bg
-        x = btnSetAnchor.x;
-        y = editAnchorTitleBar.y;
         if (editAnchorRadiusBar.visible) {
+            x = btnSetAnchor.x;
+            y = editAnchorTitleBar.y;
             fill(matrix, x - 4, y - 4, editAnchorTitleBar.x + editAnchorTitleBar.getWidth() + 3, btnAccept.y + 23, darkBG);
             textRenderer.draw(matrix, "Title: ", x - 2, y + 1, whiteText);
             textRenderer.draw(matrix, "Radius: ", x - 2, editAnchorRadiusBar.y + 1, whiteText);
@@ -354,30 +355,28 @@ public class MainScreen extends Screen implements ISoundLists {
         }
 
         //Draw Searchbar prompt text
-        x = searchBar.x;
-        y = searchBar.y;
-        Text searchHint = (new TranslatableText("gui.recipebook.search_hint")).formatted(Formatting.ITALIC).formatted(Formatting.GRAY); //Stolen from Vanilla ;)
         if (!this.searchBar.isFocused() && this.searchBar.getText().isEmpty()) {
+            x = searchBar.x;
+            y = searchBar.y;
+            Text searchHint = (new TranslatableText("gui.recipebook.search_hint")).formatted(Formatting.ITALIC).formatted(Formatting.GRAY); //Stolen from Vanilla ;)
             drawTextWithShadow(matrix, textRenderer, searchHint, x + 1, y, -1);
         }
 
-        //next sounds button tooltip
         x = btnNextSounds.x;
         y = btnNextSounds.y;
         message = "Next Sounds";
         stringW = textRenderer.getWidth(message) / 2;
-
+        //next sounds button tooltip
         if (mouseX > x && mouseX < x + btnNextSounds.getWidth() && mouseY > y && mouseY < y + btnNextSounds.getHeight()) {
             fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
             drawCenteredString(matrix, textRenderer, message, x, y - 11, whiteText);
         }
 
-        // previous sounds button tooltip
         x = btnPrevSounds.x;
         y = btnPrevSounds.y;
         message = "Previous Sounds";
         stringW = textRenderer.getWidth(message) / 2;
-
+        // previous sounds button tooltip
         if (mouseX > x && mouseX < x + btnPrevSounds.getWidth() && mouseY > y && mouseY < y + btnPrevSounds.getHeight()) {
             fill(matrix, x - stringW - 2, y - 2, x + stringW + 2, y - 13, darkBG);
             drawCenteredString(matrix, textRenderer, message, x, y - 11, whiteText);
@@ -411,30 +410,26 @@ public class MainScreen extends Screen implements ISoundLists {
     private boolean listScroll(List<AbstractButtonWidget> buttonList, double direction) {
         int buttonH = minYButton;
 
-        if (index <= 0 && direction < 0) {
-            return false;
-        }
-
-        if ((index >= buttonList.size() - 10 || index >= soundsList.size() - 10) && direction > 0) {
-            return false;
-        }
+        if (index <= 0 && direction < 0) return false;
+        if ((index >= buttonList.size() - 10 || index >= soundsList.size() - 10) && direction > 0) return false;
 
         index += direction > 0 ? 10 : -10;
 
         for (AbstractButtonWidget button : buttonList) {
             if (button instanceof MuffledSlider) {
-                int buttonIndex = buttonList.indexOf(button);
-                button.visible = buttonIndex < index + 10 && buttonIndex >= index;
+                MuffledSlider slider = (MuffledSlider) button;
+                int buttonIndex = buttonList.indexOf(slider);
+                slider.visible = buttonIndex < index + 10 && buttonIndex >= index;
 
-                if (button.visible) {
-                    button.y = buttonH;
-                    buttonH += button.getHeight() + 2;
+                if (slider.visible) {
+                    slider.y = buttonH;
+                    buttonH += slider.getHeight() + 2;
                 }
 
-                ((MuffledSlider) button).getBtnToggleSound().y = button.y;
-                ((MuffledSlider) button).getBtnToggleSound().active = button.visible;
-                ((MuffledSlider) button).getBtnPlaySound().y = button.y;
-                ((MuffledSlider) button).getBtnPlaySound().active = button.visible;
+                slider.getBtnToggleSound().y      = slider.y;
+                slider.getBtnToggleSound().active = slider.visible;
+                slider.getBtnPlaySound().y        = slider.y;
+                slider.getBtnPlaySound().active   = slider.visible;
             }
         }
 
@@ -447,31 +442,29 @@ public class MainScreen extends Screen implements ISoundLists {
 
         for (AbstractButtonWidget button : buttons) {
             if (button instanceof MuffledSlider) {
-                if (button.getMessage().toString().contains(searchBar.getText().toLowerCase())) {
-                    if (!filteredButtons.contains(button))
-                        filteredButtons.add(button);
+                MuffledSlider slider = (MuffledSlider) button;
 
-                    button.y = buttonH;
-                    buttonH += button.getHeight() + 2;
+                if (slider.getMessage().toString().contains(searchBar.getText().toLowerCase())) {
+                    if (!filteredButtons.contains(slider)) filteredButtons.add(slider);
 
-                    button.visible = button.y < maxYButton;
+                    slider.y = buttonH;
+                    buttonH += slider.getHeight() + 2;
+
+                    slider.visible = slider.y < maxYButton;
                 } else {
-                    button.visible = false;
+                    slider.visible = false;
                 }
 
-                ((MuffledSlider) button).getBtnToggleSound().y = button.y;
-                ((MuffledSlider) button).getBtnToggleSound().active = button.visible;
-                ((MuffledSlider) button).getBtnPlaySound().y = button.y;
-                ((MuffledSlider) button).getBtnPlaySound().active = button.visible;
-
+                slider.getBtnToggleSound().y = button.y;
+                slider.getBtnToggleSound().active = button.visible;
+                slider.getBtnPlaySound().y = button.y;
+                slider.getBtnPlaySound().active = button.visible;
             }
         }
-
     }
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-
         if (!editAnchorRadiusBar.getText().isEmpty()) {
             int radius = Integer.parseInt(editAnchorRadiusBar.getText());
             if (radius > 32 || radius < 1) {
@@ -571,7 +564,7 @@ public class MainScreen extends Screen implements ISoundLists {
     }
 
     public enum SoundType implements ToggleButton.TextIdentifiable {
-        RECENT("Recent"), ALL("All"), MUFFLING("Muffling");
+        RECENT("Recent"), ALL("All"), MUFFLED("Muffled");
 
         private final String string;
 

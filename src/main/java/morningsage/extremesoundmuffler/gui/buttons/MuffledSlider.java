@@ -3,7 +3,6 @@ package morningsage.extremesoundmuffler.gui.buttons;
 import morningsage.extremesoundmuffler.Config;
 import morningsage.extremesoundmuffler.gui.MainScreen;
 import morningsage.extremesoundmuffler.mufflers.instances.ISoundMuffler;
-import morningsage.extremesoundmuffler.utils.ISoundLists;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -18,22 +17,24 @@ import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
-public class MuffledSlider extends AbstractButtonWidget implements ISoundLists {
+public class MuffledSlider extends AbstractButtonWidget {
     private static final MinecraftClient minecraft = MinecraftClient.getInstance();
     private final ButtonWidget btnToggleSound;
     private final PlaySoundButton btnPlaySound;
 
     public SliderType sliderType = SliderType.UNMUTED;
 
+    private final int index;
     private double sliderValue;
     private final Identifier sound;
     private final ISoundMuffler muffler;
     public static Identifier tickSound;
     public static boolean showSlider = false;
 
-    public MuffledSlider(int x, int y, int width, int height, double sliderValue, Identifier sound, ISoundMuffler muffler) {
+    public MuffledSlider(int index, int x, int y, int width, int height, double sliderValue, Identifier sound, ISoundMuffler muffler) {
         super(x, y, width, height, Text.of(sound.getPath() + ":" + sound.getNamespace()));
 
+        this.index = index;
         this.sliderValue = sliderValue;
         this.sound = sound;
         this.muffler = muffler;
@@ -60,7 +61,7 @@ public class MuffledSlider extends AbstractButtonWidget implements ISoundLists {
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         minecraft.getTextureManager().bindTexture(MainScreen.GUI);
-        drawGradient(matrices);
+        drawBackground(matrices);
         drawTexture(matrices, btnToggleSound.x, btnToggleSound.y, 43.0F, sliderType.V, 11, 11, 256, 256); //muffle button bg
         drawTexture(matrices, btnPlaySound.x, btnPlaySound.y, 32.0F, 202.0F, 11, 11, 256, 256); //play button bg
 
@@ -77,6 +78,15 @@ public class MuffledSlider extends AbstractButtonWidget implements ISoundLists {
             }
             minecraft.textRenderer.drawWithShadow(matrices, msgTruncated, this.x + 2, this.y + 2, sliderType.TextColor); //title
         }
+    }
+
+    private void drawBackground(MatrixStack matrices) {
+        if (index % 2 == 0) {
+            fill(matrices, x, y, x + this.width + 5, this.y + minecraft.textRenderer.fontHeight + 2, 0xC8323232);
+            //fill(matrices, this.x, this.y, this.x + v + 3, this.y + minecraft.textRenderer.fontHeight + 2, 0xFF000000);
+        }
+
+        drawGradient(matrices);
     }
 
     private void drawGradient(MatrixStack matrixStack) {
@@ -111,7 +121,7 @@ public class MuffledSlider extends AbstractButtonWidget implements ISoundLists {
     }
 
     private void setSliderValue(double value) {
-        this.sliderValue = MathHelper.clamp(value, 0.0D, 0.99D);
+        this.sliderValue = MathHelper.clamp(value, 0.0D, 0.90D);
         muffler.addSound(this.sound, this.sliderValue);
     }
 
@@ -138,8 +148,8 @@ public class MuffledSlider extends AbstractButtonWidget implements ISoundLists {
     }
 
     public enum SliderType {
-        MUTED(0xFFFF00, 213.0F),
-        UNMUTED(0xFFFFFF, 202.0F);
+        MUTED(0x00FFFF, 202.0F),
+        UNMUTED(0xFFFFFF, 213.0F);
 
         public final int TextColor;
         public final float V;

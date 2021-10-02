@@ -1,6 +1,6 @@
 package morningsage.extremesoundmuffler.mixin;
 
-import morningsage.extremesoundmuffler.utils.AbstractButtonWidgetAccessor;
+import morningsage.extremesoundmuffler.utils.AbstractButtonWidgetDuck;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(AbstractButtonWidget.class)
 @Environment(EnvType.CLIENT)
-public class AbstractButtonWidgetMixin implements AbstractButtonWidgetAccessor {
+public class AbstractButtonWidgetMixin implements AbstractButtonWidgetDuck {
 
     @Shadow public boolean active;
     private static final int UNSET_FG_COLOR = -1;
@@ -20,7 +20,7 @@ public class AbstractButtonWidgetMixin implements AbstractButtonWidgetAccessor {
 
     @ModifyConstant(
         method = "renderButton",
-        constant = {@Constant(intValue = 16777215), @Constant(intValue = 10526880)}
+        constant = {@Constant(intValue = 0xFFFFFF), @Constant(intValue = 0xA0A0A0)}
     )
     public int correctedForecolor(int j, MatrixStack matrices, int mouseX, int mouseY, float delta) {
         return getFGColor();
@@ -30,7 +30,7 @@ public class AbstractButtonWidgetMixin implements AbstractButtonWidgetAccessor {
     public int getFGColor() {
         if (packedFGColor != UNSET_FG_COLOR) return packedFGColor;
 
-        return this.active ? 16777215 : 10526880;
+        return this.active ? 0xFFFFFF : 0xA0A0A0;
     }
 
     @Override

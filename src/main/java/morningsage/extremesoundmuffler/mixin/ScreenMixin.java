@@ -4,7 +4,6 @@ import morningsage.extremesoundmuffler.events.InitGuiEvents;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import org.spongepowered.asm.mixin.Final;
@@ -19,9 +18,7 @@ import java.util.List;
 @Mixin(Screen.class)
 @Environment(EnvType.CLIENT)
 public abstract class ScreenMixin {
-    @Shadow @Final protected List<AbstractButtonWidget> buttons;
     @Shadow protected abstract <T extends AbstractButtonWidget> T addButton(T button);
-    @Shadow @Final protected List<Element> children;
 
     @Inject(
         at = @At("TAIL"),
@@ -29,10 +26,7 @@ public abstract class ScreenMixin {
     )
     public void init(MinecraftClient client, int width, int height, CallbackInfo callbackInfo) {
         InitGuiEvents.POST_INIT.invoker().onGuiPostInit(
-            (Screen) (Object) this, this.buttons, this::addButton, b -> {
-                buttons.remove(b);
-                children.remove(b);
-            }
+            (Screen) (Object) this, this::addButton
         );
     }
 }

@@ -28,6 +28,7 @@ public final class SoundMufflers {
     }
 
     public static void setAnchors() {
+        anchors.clear();
         for (int i = 0; i <= 9; i++) {
             anchors.add(new AnchorMuffler(i, "Anchor: " + i));
         }

@@ -1,15 +1,12 @@
 package morningsage.extremesoundmuffler.gui.buttons;
 
-import morningsage.extremesoundmuffler.utils.eventHndlers.SoundEventHandler;
+import morningsage.extremesoundmuffler.events.handlers.SoundEventHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AbstractPressableButtonWidget;
-import net.minecraft.client.sound.SoundManager;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
-
-import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public class PlaySoundButton extends AbstractPressableButtonWidget {

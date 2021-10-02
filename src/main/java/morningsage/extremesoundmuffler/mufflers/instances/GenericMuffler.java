@@ -54,13 +54,7 @@ public class GenericMuffler implements ISoundMuffler {
     }
 
     @Override
-    public void setName(String name) { /* No-Op */ }
-
-    @Override
     public int getIndex() {
         return -1;
     }
-
-    @Override
-    public void setAnchor() { /* No-Op */ }
 }

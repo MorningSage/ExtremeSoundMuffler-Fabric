@@ -1,6 +1,6 @@
 package morningsage.extremesoundmuffler.utils;
 
-public interface AbstractButtonWidgetAccessor {
+public interface AbstractButtonWidgetDuck {
     int getFGColor();
     void setFGColor(int color);
 }

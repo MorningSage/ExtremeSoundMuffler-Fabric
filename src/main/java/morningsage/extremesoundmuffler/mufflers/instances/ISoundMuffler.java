@@ -12,7 +12,5 @@ public interface ISoundMuffler {
     void clearSounds();
     boolean isValidMuffler();
     String getName();
-    void setName(String name);
     int getIndex();
-    void setAnchor();
 }

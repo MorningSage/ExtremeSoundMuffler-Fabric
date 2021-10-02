@@ -1,6 +1,6 @@
 package morningsage.extremesoundmuffler.mixin;
 
-import morningsage.extremesoundmuffler.utils.eventHndlers.SoundEventHandler;
+import morningsage.extremesoundmuffler.events.SoundPlayingEvents;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.sound.SoundInstance;
@@ -21,8 +21,12 @@ public abstract class SoundSystemMixin {
         method = "getAdjustedVolume"
     )
     private float getVolume(SoundInstance soundInstance) {
-        return SoundEventHandler.getSoundVolume(soundInstance.getId(), soundInstance.getVolume(), new BlockPos(
-            soundInstance.getX(), soundInstance.getY(), soundInstance.getZ()
-        ));
+        SoundPlayingEvents.SoundInfo soundInfo = new SoundPlayingEvents.SoundInfo(
+            soundInstance.getId(), soundInstance.getVolume(), new BlockPos(soundInstance.getX(), soundInstance.getY(), soundInstance.getZ())
+        );
+
+        SoundPlayingEvents.SOUND_VOLUME_EVENT.invoker().onSoundVolume(soundInfo);
+
+        return soundInfo.getVolume();
     }
 }
